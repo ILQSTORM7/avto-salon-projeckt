@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>Premium AvtoSalon Dünya Maşınları</title>
+<link rel="shortcut icon" href="avtopro.png" type="image/x-icon">
+<style>
+body {margin:0;font-family:Arial,sans-serif;background:#f5f5f5;}
+
+/* Header */
+header{background:#111;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+header h1{margin:0;font-size:24px}
+nav a{color:white;margin:0 15px;text-decoration:none;font-weight:bold}
+nav a:hover{color:red}
+
+/* Hero */
+.hero{background:url('https://images.unsplash.com/photo-1616006885942-2f84f9f9f8e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080') no-repeat center center/cover;color:white;text-align:center;padding:120px 20px;position:relative}
+.hero::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}
+.hero h2,.hero p{position:relative;z-index:1}
+.hero h2{font-size:48px;margin-bottom:20px}
+.hero p{font-size:20px;margin-bottom:30px}
+
+/* Filter Bar */
+.filter-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;background:#222;padding:10px 0;overflow-x:auto;}
+.filter-bar button{padding:8px 12px;border:none;background:#333;color:white;font-weight:bold;cursor:pointer;border-radius:5px;transition:0.3s;white-space:nowrap;}
+.filter-bar button:hover,.filter-bar button.active{background:red}
+
+/* Cars */
+.cars{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:10px}
+.car{background:white;width:180px;border-radius:10px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.2);text-align:center;transition:transform 0.3s;cursor:pointer}
+.car:hover{transform:translateY(-5px)}
+.car img{width:100%;height:120px;object-fit:cover}
+.car h3{margin:5px 0 3px;font-size:14px}
+.car p{margin-bottom:5px;font-weight:bold;font-size:12px}
+
+/* Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:200;overflow:auto;}
+.modal-content{background:white;border-radius:10px;max-width:800px;width:90%;padding:20px;position:relative}
+.modal-close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;font-weight:bold;color:#333}
+.modal-content h2{margin-top:0}
+.carousel img{width:100%;height:300px;object-fit:cover;border-radius:5px;margin-top:10px}
+.carousel-controls{display:flex;justify-content:space-between;margin-top:10px}
+.carousel-controls button{padding:5px 10px;background:#111;color:white;border:none;border-radius:5px;cursor:pointer}
+.carousel-controls button:hover{background:red}
+.modal video{width:100%;margin-top:10px;border-radius:5px}
+
+/* Responsive */
+@media(max-width:900px){.cars{flex-direction:column;align-items:center}.car{width:90%}.hero h2{font-size:36px}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Premium AvtoSalon Dünya</h1>
+<nav>
+<a href="#home">Ana səhifə</a>
+<a href="#cars">Maşınlar</a>
+<a href="#contact">Əlaqə</a>
+</nav>
+</header>
+
+<section class="hero" id="home">
+<h2>AVTO SALON 002</h2>
+<p>© 2026 Created in Azerbaijan</p>
+</section>
+
+<div class="filter-bar" id="filterBar"></div>
+
+<section class="cars" id="cars"></section>
+
+<!-- Modal -->
+<div class="modal" id="carModal">
+<div class="modal-content">
+<span class="modal-close" onclick="closeModal()">&times;</span>
+<h2 id="modalTitle"></h2>
+<div class="carousel">
+<img id="modalImg" src="" alt="">
+</div>
+<div class="carousel-controls">
+<button onclick="prevImg()">&#8592; Əvvəl</button>
+<button onclick="nextImg()">Sonrakı &#8594;</button>
+</div>
+<p id="modalCountry"></p>
+<p id="modalCategory"></p>
+<p id="modalPrice"></p>
+<p id="modalSpeed"></p>
+<video id="modalVideo" controls src=""></video>
+</div>
+</div>
+
+<section class="contact" id="contact">
+<h2>Əlaqə</h2>
+<form>
+<input type="text" placeholder="Adınız" required>
+<input type="email" placeholder="Email" required>
+<textarea placeholder="Mesajınız" rows="5" required></textarea>
+<button type="submit">Göndər</button>
+</form>
+</section>
+
+<footer>
+<p>© 2026 Premium AvtoSalon | Bütün hüquqlar qorunur</p>
+</footer>
+
+<script>
+// 32 ölkə siyahısı
+const countries=[
+"Germany","England","France","Russia","Norway","Turkey","Azerbaijan","Italy","Portugal","Argentina","Estonia","Belgium","Netherlands","Belarus","Ukraine","Uzbekistan","Pakistan","South Korea","USA",
+"Lithuania","Cameroon","Senegal","Afghanistan","Macedonia","Finland","Croatia","Brazil","Ghana","China","Poland","Spain"
+];
+
+// Kateqoriyalar
+const categories=['SUV','Sedan','Sport','Electric'];
+
+// Maşın məlumatları
+const carsData=[];
+countries.forEach(country=>{
+    for(let i=1;i<=200;i++){
+        const cat = categories[Math.floor(Math.random()*categories.length)];
+        const letter=String.fromCharCode(65+(i%26));
+        carsData.push({
+            name:`${letter} ${country} Model ${i}`,
+            country: country,
+            category:cat,
+            price:`${Math.floor(Math.random()*50 + 20)} 000$`,
+            speed:`0-100 km/s: ${Math.floor(Math.random()*5 + 3)} s`,
+            images:[
+                `https://source.unsplash.com/400x300/?car,${i}`,
+                `https://source.unsplash.com/400x300/?car,${i+100}`
+            ],
+            video:`https://www.w3schools.com/html/mov_bbb.mp4` // sample video
+        });
+    }
+});
+
+// Sort A-Z
+carsData.sort((a,b)=>a.name.localeCompare(b.name));
+
+// Filter bar yarat
+const filterBar=document.getElementById('filterBar');
+countries.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.innerText=c;
+    btn.onclick=()=>{filterCars(c)};
+    filterBar.appendChild(btn);
+});
+const allBtn=document.createElement('button');
+allBtn.innerText='Hamısı';
+allBtn.classList.add('active');
+allBtn.onclick=()=>{filterCars('all')};
+filterBar.insertBefore(allBtn, filterBar.firstChild);
+
+// Cars section
+const carsSection=document.getElementById('cars');
+function displayCars(cars){
+    carsSection.innerHTML='';
+    cars.forEach((car,index)=>{
+        const div=document.createElement('div');
+        div.classList.add('car');
+        div.setAttribute('data-country',car.country);
+        div.innerHTML=`
+            <img src="${car.images[0]}" alt="${car.name}">
+            <h3>${car.name}</h3>
+            <p>${car.price}</p>
+        `;
+        div.addEventListener('click',()=>openModal(index));
+        carsSection.appendChild(div);
+    });
+}
+
+// Filter funksiyası
+function filterCars(country){
+    document.querySelectorAll('.filter-bar button').forEach(btn=>btn.classList.remove('active'));
+    event.target.classList.add('active');
+    if(country==='all'){displayCars(carsData)}
+    else{displayCars(carsData.filter(c=>c.country===country))}
+}
+
+// Modal
+let currentIndex=0;
+function openModal(index){
+    currentIndex=index;
+    const car=carsData[index];
+    document.getElementById('modalTitle').innerText=car.name;
+    document.getElementById('modalImg').src=car.images[0];
+    document.getElementById('modalCountry').innerText=`Ölkə: ${car.country}`;
+    document.getElementById('modalCategory').innerText=`Kateqoriya: ${car.category}`;
+    document.getElementById('modalPrice').innerText=`Qiymət: ${car.price}`;
+    document.getElementById('modalSpeed').innerText=car.speed;
+    document.getElementById('modalVideo').src=car.video;
+    document.getElementById('carModal').style.display='flex';
+}
+function closeModal(){document.getElementById('carModal').style.display='none'}
+
+// Carousel
+function nextImg(){
+    const car=carsData[currentIndex];
+    const img=document.getElementById('modalImg');
+    img.src=car.images[(car.images.indexOf(img.src.split('/').slice(-2).join('/'))+1)%car.images.length]||car.images[1];
+}
+function prevImg(){
+    const car=carsData[currentIndex];
+    const img=document.getElementById('modalImg');
+    img.src=car.images[(car.images.indexOf(img.src.split('/').slice(-2).join('/'))-1+car.images.length)%car.images.length]||car.images[0];
+}
+
+// İlk dəfə bütün maşınları göstər
+displayCars(carsData);
+</script>
+
+</body>
+</html>
